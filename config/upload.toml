@@ -1,0 +1,18 @@
+#本地的项目的配置文件
+[Local]
+    #ProjectRoot = "D:\server\server\game-server2"
+    App = "E:\\server\\app"
+    Data = "E:\\server\\config\\data"
+    appjs = "E:\\server\\app.js"
+
+
+[Remote1]
+     App = "/home/007/server/game-server2/app"
+     Data = "/home/007/server/game-server2/config/data"
+     appjs = "/home/007/server/game-server2/app.js"
+
+#[Remote2]
+#     App = "/root/server/game/12001/server/game-server/app"
+#     Data = "/root/server/game/12001/server/game-server/config/data"
+#     appjs = "/root/server/game/12001/server/game-server/app.js"
+
