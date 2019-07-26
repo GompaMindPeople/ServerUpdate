@@ -11,15 +11,37 @@ import (
 	"time"
 )
 
-func main() {
+type S struct {
+	val string
+}
 
+type C interface {
+	say(string) string
+}
+
+type sta func(cmd string) error
+
+func (s sta) Say(string) string {
+	s("a'")
+	return ""
+}
+
+//var  W C = (*S)(nil)
+func main() {
+	//fmt.Println(C.say(s,"a"))
+	//fmt.Printf("%T\n",C)
+	//fmt.Printf("%T\n",W)
+
+	//sta.Say(func(cmd string) error {
+	//	return nil
+	//},"a")
 	var (
 		activityDay int64 = 30
 		cycleDay    int64 = 15
 		daley       int64 = 3
 		//2019-07-20 0:0:0
 		//首次活动的开启时间
-		firstActivity int64 = 1561286885
+		firstActivity int64 = 1551571200
 		DayToSec      int64 = 24 * 3600
 	)
 
@@ -34,18 +56,20 @@ func main() {
 	//residue := ( acivitySec - diffSec) /DayToSec+1
 
 	//周期中的第几天.
-	cycDay := (diffSec%sumSec)/DayToSec + 1
+	cycDay := (diffSec % sumSec) / DayToSec
 
-	fmt.Println("当前活动周期的天数-->", cycDay)
+	fmt.Println("当前活动周期的天数-->", cycDay+1)
+
 	if cycDay <= activityDay {
-		fmt.Printf("活动第%d天\n", cycDay)
+		fmt.Printf("活动第%d天\n", cycDay+1)
 	} else {
 		fmt.Println("-----活动结束---------")
-		fmt.Printf("等待间隔第%d天\n", cycDay-activityDay)
+		fmt.Printf("等待间隔第%d天\n", cycDay-activityDay+1)
 	}
 	unixStart := time.Unix(nowStamp-(diffSec%sumSec), 0)
+	unixEnd := time.Unix(nowStamp-(diffSec%sumSec)+activityDay-(DayToSec*1), 0)
 	fmt.Println("当前活动开启的时间", unixStart)
-
+	fmt.Println("当前活动结束的结束", unixEnd)
 	unix := time.Unix(nowStamp+sumSec-(diffSec%sumSec), 0)
 	fmt.Println("下一个活动开启的时间", unix)
 

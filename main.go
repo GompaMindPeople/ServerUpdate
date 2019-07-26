@@ -12,6 +12,7 @@ import (
 	"ServerUpdate/utils"
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"log"
 	"os"
 )
 
@@ -20,7 +21,9 @@ func main() {
 		mode = 0
 		err  error
 	)
-	fmt.Println("服务器更新工具版本:0.0.1")
+	fmt.Println("服务器更新工具版本:0.0.2")
+	//读取ssh相关的配置文件
+	sshConfig, err := ReadSSHConfig("config/config.toml")
 	fmt.Println("1.全覆盖---->意味着无差别覆盖本地路径的数据覆盖到远程服务器上")
 	fmt.Println("请输入匹配模式(1.全覆盖，2:只覆盖config文件):")
 	//for {
@@ -40,13 +43,6 @@ func main() {
 		os.Exit(1)
 	}
 	//}
-
-	sshConfig := model.SshConfig{}
-	err = utils.ReadConfigByObj("config/config.toml", &sshConfig)
-	if err != nil {
-		fmt.Println("读取配置文件时发生错误:", err)
-		return
-	}
 	//获取 ssh 的实例
 	bean, err := utils.GetSshBean(sshConfig.UserName, sshConfig.Password, sshConfig.HostName, sshConfig.Port)
 	if err != nil {
@@ -94,4 +90,51 @@ func main() {
 	}
 	fmt.Println("输入任意键退出!")
 	_, _ = fmt.Scan(&mode)
+}
+
+/**
+读取ssh配置,需要输入配置的路径
+*/
+func ReadSSHConfig(path string) (model.SshConfig, error) {
+	sshAllConfig := make(map[string]interface{})
+	var configObj model.SshConfig
+	choose := ""
+	err := utils.ReadConfigByMap(path, &sshAllConfig)
+	if err != nil {
+		fmt.Println("读取配置文件时发生错误:", err)
+		log.Fatal()
+	}
+	//如果  配置数量大于1 需要 用户自己选择配置
+	if len(sshAllConfig) > 1 {
+		fmt.Println("请选择一个SSH:")
+		for k, v := range sshAllConfig {
+			fmt.Printf("输入%s,该服务器指向-->%s\n", k, v.(map[string]interface{})["Annota"])
+		}
+		_, err := fmt.Scan(&choose)
+		v, ok := sshAllConfig[choose]
+		if ok {
+			configObj = fillSshConfigObj(v.(map[string]interface{}))
+		} else {
+			log.Fatal("输入的ssh配置未找到!")
+		}
+		if err != nil {
+			fmt.Println("输入的时候发生错误:", err)
+			log.Fatal()
+		}
+	} else {
+		//配置数量小于2的时候则默认选择该配置
+		for _, v := range sshAllConfig {
+			configObj = fillSshConfigObj(v.(map[string]interface{}))
+		}
+	}
+	return configObj, nil
+}
+
+func fillSshConfigObj(obj map[string]interface{}) model.SshConfig {
+	sshConfig := model.SshConfig{}
+	sshConfig.HostName = obj["HostName"].(string)
+	sshConfig.Port = int16(obj["Port"].(int64))
+	sshConfig.UserName = obj["UserName"].(string)
+	sshConfig.Password = obj["Password"].(string)
+	return sshConfig
 }

@@ -1,5 +1,5 @@
 /*
-@Time : 2019/7/22 13:33 
+@Time : 2019/7/22 13:33
 @Author : Tester
 @File : 一条小咸鱼
 @Software: GoLand
@@ -13,14 +13,12 @@ import (
 	"os"
 )
 
-
-
 /**
-	读取ioml文本的配置文件,转换成一个结构体
-	@fileName 配置文件的路径
-	@configObj 配置文件所映射的对象,需要传入指针数据
- */
-func ReadConfigByObj(fileName string,configObj interface{}) ( err error) {
+读取ioml文本的配置文件,转换成一个结构体
+@fileName 配置文件的路径
+@configObj 配置文件所映射的对象,需要传入指针数据
+*/
+func ReadConfigByObj(fileName string, configObj interface{}) (err error) {
 	var (
 		fp       *os.File
 		fcontent []byte
@@ -41,4 +39,20 @@ func ReadConfigByObj(fileName string,configObj interface{}) ( err error) {
 		return
 	}
 	return
+}
+
+/**
+读取配置文件中的数据返回对应的数据
+@fileName 配置文件的路径
+@configObj 配置文件所映射的map,需要传入指针数据
+*/
+func ReadConfigByMap(fileName string, mapObj *map[string]interface{}) (err error) {
+
+	_, err = toml.DecodeFile(fileName, mapObj)
+
+	if err != nil {
+		fmt.Println("读取上传配置文件文件时发生错误:", err)
+		return err
+	}
+	return nil
 }
