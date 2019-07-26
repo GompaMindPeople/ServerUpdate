@@ -8,15 +8,15 @@
 
 
 [Remote1]
-     server = "vm"
+     #用于标记该路径属于svn
+     # 如果不配置则属于所有svn
+     svn = "vm"
      App = "/home/007/server/game-server2/app"
      Data = "/home/007/server/game-server2/config/data"
      appjs = "/home/007/server/game-server2/app.js"
 
 [Remote2]
-     #用于标记该路径属于某个独立的服务器
-     # 如果不配置则属于所有服务器
-     server = "stable"
+     svn = "stable"
      App = "/root/server/game/12001/server/game-server/app"
      Data = "/root/server/game/12001/server/game-server/config/data"
      appjs = "/root/server/game/12001/server/game-server/app.js"

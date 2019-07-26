@@ -72,11 +72,12 @@ func main() {
 		}
 	}
 	remotes := make([]map[string]interface{}, 0)
-	tag := true
+
 	for k, v := range strings {
 		if k != "Local" {
+			tag := true
 			m := v.(map[string]interface{})
-			val, ok := m["server"]
+			val, ok := m["svn"]
 			if ok {
 				if val != choose {
 					tag = false
@@ -84,7 +85,6 @@ func main() {
 			}
 			if tag {
 				remotes = append(remotes, v.(map[string]interface{}))
-				tag = true
 			}
 
 		}
