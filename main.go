@@ -23,7 +23,7 @@ func main() {
 	)
 	fmt.Println("服务器更新工具版本:0.0.2")
 	//读取ssh相关的配置文件
-	sshConfig, err := ReadSSHConfig("config/config.toml")
+	sshConfig, choose, err := ReadSSHConfig("config/config.toml")
 	fmt.Println("1.全覆盖---->意味着无差别覆盖本地路径的数据覆盖到远程服务器上")
 	fmt.Println("请输入匹配模式(1.全覆盖，2:只覆盖config文件):")
 	//for {
@@ -72,9 +72,21 @@ func main() {
 		}
 	}
 	remotes := make([]map[string]interface{}, 0)
+	tag := true
 	for k, v := range strings {
 		if k != "Local" {
-			remotes = append(remotes, v.(map[string]interface{}))
+			m := v.(map[string]interface{})
+			val, ok := m["server"]
+			if ok {
+				if val != choose {
+					tag = false
+				}
+			}
+			if tag {
+				remotes = append(remotes, v.(map[string]interface{}))
+				tag = true
+			}
+
 		}
 	}
 
@@ -95,7 +107,7 @@ func main() {
 /**
 读取ssh配置,需要输入配置的路径
 */
-func ReadSSHConfig(path string) (model.SshConfig, error) {
+func ReadSSHConfig(path string) (model.SshConfig, string, error) {
 	sshAllConfig := make(map[string]interface{})
 	var configObj model.SshConfig
 	choose := ""
@@ -127,7 +139,7 @@ func ReadSSHConfig(path string) (model.SshConfig, error) {
 			configObj = fillSshConfigObj(v.(map[string]interface{}))
 		}
 	}
-	return configObj, nil
+	return configObj, choose, nil
 }
 
 func fillSshConfigObj(obj map[string]interface{}) model.SshConfig {
