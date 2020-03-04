@@ -20,15 +20,14 @@ import (
 )
 
 type SSHModel struct {
-	session *ssh.Session
-	writeCloser     io.WriteCloser
-	out        io.Reader
+	session     *ssh.Session
+	writeCloser io.WriteCloser
+	out         io.Reader
 }
 
 type SshBean struct {
-	Client  *ssh.Client
+	Client *ssh.Client
 }
-
 
 //获取ssh客户端实例
 func GetSshBean(user, password, host string, port int16) (*SshBean, error) {
@@ -39,7 +38,7 @@ func GetSshBean(user, password, host string, port int16) (*SshBean, error) {
 		client       *ssh.Client
 		err          error
 	)
-	
+
 	// get auth method
 	auth = make([]ssh.AuthMethod, 0)
 	auth = append(auth, ssh.Password(password))
@@ -65,11 +64,12 @@ func GetSshBean(user, password, host string, port int16) (*SshBean, error) {
 }
 
 /**
-	获取一个ssh的客户端
- */
-func (s *SshBean) GetClient()*ssh.Client{
+获取一个ssh的客户端
+*/
+func (s *SshBean) GetClient() *ssh.Client {
 	return s.Client
 }
+
 //获取session,始终获得最新的实例
 func (s *SshBean) GetSession() (*ssh.Session, error) {
 	client := s.Client
@@ -277,8 +277,8 @@ func (s *SshBean) GetSftpConnect() (sftpClient *sftp.Client, err error) { //参�
 }
 
 /**
-	上传本地文件到远程服务器上
- */
+上传本地文件到远程服务器上
+*/
 func UploadFileRemote(sftpClient *sftp.Client, localFilePath string, remotePath string) {
 	//打开本地文件流
 	srcFile, err := os.Open(localFilePath)
@@ -294,7 +294,7 @@ func UploadFileRemote(sftpClient *sftp.Client, localFilePath string, remotePath 
 	dstFile, err := sftpClient.Create(remotePath)
 
 	if err != nil {
-		log.Println("sftpClient.Create error : ",err ,"远程地址->",remotePath)
+		log.Println("sftpClient.Create error : ", err, "远程地址->", remotePath)
 		return
 	}
 	//关闭远程文件
@@ -308,4 +308,3 @@ func UploadFileRemote(sftpClient *sftp.Client, localFilePath string, remotePath 
 	}
 	dstFile.Write(ff)
 }
-

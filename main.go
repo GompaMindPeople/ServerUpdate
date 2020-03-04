@@ -22,8 +22,23 @@ func main() {
 		err  error
 	)
 	fmt.Println("服务器更新工具版本:0.0.2")
+	configUpload := ""
+	config := ""
 	//读取ssh相关的配置文件
-	sshConfig, choose, err := ReadSSHConfig("config/config.toml")
+	if len(os.Args) > 1 {
+		config = os.Args[1]
+		if len(os.Args) > 2 {
+			configUpload = os.Args[2]
+		}
+	}
+
+	if config == "" {
+		config = "config/config.toml"
+	}
+	if configUpload == "" {
+		configUpload = "config/upload.toml"
+	}
+	sshConfig, choose, err := ReadSSHConfig(config)
 	fmt.Println("1.全覆盖---->意味着无差别覆盖本地路径的数据覆盖到远程服务器上")
 	fmt.Println("请输入匹配模式(1.全覆盖，2:只覆盖config文件):")
 	//for {
@@ -31,7 +46,9 @@ func main() {
 	if err != nil {
 		fmt.Println("输入错误:->", err)
 	}
+
 	flag := 0
+	//用来表示所选择的匹配模式
 	switch mode {
 	case 1:
 		break
@@ -57,7 +74,7 @@ func main() {
 
 	strings := make(map[string]interface{})
 
-	_, err = toml.DecodeFile("config/upload.toml", &strings)
+	_, err = toml.DecodeFile(configUpload, &strings)
 	if err != nil {
 		fmt.Println("读取上传配置文件文件时发生错误:", err)
 		return
@@ -72,7 +89,7 @@ func main() {
 		}
 	}
 	remotes := make([]map[string]interface{}, 0)
-
+	//用于处理进行填充和过滤所需要的远程服务器中
 	for k, v := range strings {
 		if k != "Local" {
 			tag := true
@@ -89,7 +106,7 @@ func main() {
 
 		}
 	}
-
+	//发送文件到远程服务器中
 	for key, value := range local {
 		for _, remote := range remotes {
 			//请求远程服务器并准备上传文件
